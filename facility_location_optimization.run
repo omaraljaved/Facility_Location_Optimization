@@ -1,5 +1,3 @@
-*.run linguist-language=AMPL
-
 reset;
 
 param num_facilities;
