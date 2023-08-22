@@ -1,0 +1,56 @@
+reset;
+
+param num_facilities;
+param num_customers;
+
+set FACILITIES := 1..num_facilities;
+set CUSTOMERS := 1..num_customers;
+
+param distance {FACILITIES, CUSTOMERS};
+param demand {CUSTOMERS};
+param capacity {FACILITIES};
+
+data;
+
+param num_facilities := 3;
+param num_customers := 5;
+
+param distance: 1 2 3 4 5 :=
+1    10  15  20  25  30
+2    12  18  24  30  36
+3    15  22  30  38  45;
+
+param demand := 1 20  2 25  3 30  4 15  5 40;
+param capacity := 1 50  2 40  3 60;
+
+option solver gurobi;
+
+var open {FACILITIES} binary;
+var assign {FACILITIES, CUSTOMERS} binary;
+var layout_x {FACILITIES};
+var layout_y {FACILITIES};
+
+minimize Total_Cost:
+    sum{i in FACILITIES, j in CUSTOMERS} distance[i, j] * assign[i, j];
+
+subject to Demand_Satisfaction{j in CUSTOMERS}:
+    sum{i in FACILITIES} assign[i, j] = 1;
+
+subject to Facility_Capacity{i in FACILITIES}:
+    sum{j in CUSTOMERS} demand[j] * assign[i, j] <= capacity[i];
+
+solve;
+
+printf "Optimal Facility Locations:\n";
+for {i in FACILITIES} {
+    if open[i] > 0.5 then {
+        printf "Facility %d: Location (%f, %f)\n", i, layout_x[i], layout_y[i];
+    }
+}
+
+printf "\nOptimal Customer Assignments:\n";
+for {i in FACILITIES, j in CUSTOMERS} {
+    if assign[i, j] > 0.5 then {
+        printf "Customer %d assigned to Facility %d\n", j, i;
+    }
+}
