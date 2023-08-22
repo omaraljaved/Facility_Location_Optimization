@@ -7,3 +7,6 @@ The facility location optimization problem involves finding the best locations f
 3. Considers distances between facilities and customers.
 4. Enforces customer demand satisfaction and facility capacity constraints.
 5. Uses the Gurobi solver for optimization.
+
+## Results
+The code displays the optimal facility locations and customer assignments based on the solved optimization problem.
